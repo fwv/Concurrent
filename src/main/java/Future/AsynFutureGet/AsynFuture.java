@@ -23,12 +23,28 @@ public class AsynFuture {
         return new AsynFuture(future);
     }
 
+    // 添加监听器
     public void addListener(FutureListener listener) {
         Runnable task = ()->{
             try {
                 Object result =  future.get();
                 listener.onSuccess(result);
+            } catch (Exception e) {
+                listener.onFailed();
+            }finally {
+                shutdown();
+            }
+        };
 
+        executorService.submit(task);
+    }
+
+    // 添加监听器（带有超时机制）
+    public void addListener(FutureListener listener, long timeout, TimeUnit unit) {
+        Runnable task = ()->{
+            try {
+                Object result =  future.get(timeout, unit);
+                listener.onSuccess(result);
             } catch (Exception e) {
                 listener.onFailed();
             }finally {
