@@ -20,19 +20,27 @@ public class ConsumerExecutor {
 
     public BlockingQueue queue;
 
-    public ConsumerExecutor() {
+    public ConsumerExecutor(AbstractMultiConsumerExecutor parent) {
+
+        parentExecutor = parent;
 
         queue = new LinkedBlockingQueue();
 
         executor = new ThreadPoolExecutor(5, 10, 3, TimeUnit.MINUTES,
                 new LinkedBlockingQueue(), new ConsumerThreadFactory(),
                 new ConsumerTaskRejectHandler(parentExecutor.messageQueue));
+        onProcess();
 
     }
 
     public ConsumerExecutor(ThreadPoolExecutor executor) {
         this.executor = executor;
         queue = new LinkedBlockingQueue();
+        onProcess();
+    }
+
+    public void onProcess() {
+       new Thread(ConsumerTask.create(this), "consumer-dispatch-thread").start();
     }
 
 

@@ -1,5 +1,7 @@
 package MultiConsumerExecutor;
 
+import tools.LogUtils;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -22,6 +24,7 @@ public class ConsumerTaskRejectHandler implements RejectedExecutionHandler{
         if (null != messageQueue)
         try {
             messageQueue.put(r);
+            LogUtils.log.info("Consumer rejected! put message into messageQueue");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
