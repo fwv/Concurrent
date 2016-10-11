@@ -3,11 +3,12 @@ package Future.AsynFutureGet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author fengwei
  * Created on 2016/9/28/0028.
- * Òì²½Future£¬Í¨¹ýÌí¼Ó¼àÌýÆ÷ÊµÏÖ
+ * å¼‚æ­¥Futureï¼Œé€šè¿‡æ·»åŠ ç›‘å¬å™¨å®žçŽ°
  */
 public class AsynFuture {
 
@@ -23,7 +24,7 @@ public class AsynFuture {
         return new AsynFuture(future);
     }
 
-    // Ìí¼Ó¼àÌýÆ÷
+    // æ·»åŠ ç›‘å¬å™¨
     public void addListener(FutureListener listener) {
         Runnable task = ()->{
             try {
@@ -39,7 +40,7 @@ public class AsynFuture {
         executorService.submit(task);
     }
 
-    // Ìí¼Ó¼àÌýÆ÷£¨´øÓÐ³¬Ê±»úÖÆ£©
+    // æ·»åŠ ç›‘å¬å™¨ï¼ˆå¸¦æœ‰è¶…æ—¶æœºåˆ¶ï¼‰
     public void addListener(FutureListener listener, long timeout, TimeUnit unit) {
         Runnable task = ()->{
             try {
@@ -51,12 +52,12 @@ public class AsynFuture {
                 shutdown();
             }
         };
-
         executorService.submit(task);
     }
 
     public void shutdown() {
         executorService.shutdown();
     }
+
 
 }

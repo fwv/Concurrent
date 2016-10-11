@@ -12,7 +12,7 @@ import java.util.concurrent.Future;
 /**
  * @Author fengwei
  * Created on 2016/9/28/0028.
- * 异步Future，可以使得Future.get()变为异步，加快handler响应速度
+ * 锟届步Future锟斤拷锟斤拷锟斤拷使锟斤拷Future.get()锟斤拷为锟届步锟斤拷锟接匡拷handler锟斤拷应锟劫讹拷
  */
 public class FutureHandler {
 
@@ -23,11 +23,11 @@ public class FutureHandler {
         Future f = executorService.submit(task);
         LogUtils.log.info("start process task");
 
-            //同步
+            //同锟斤拷
             //String result = (String) f.get();
             //LogUtils.log.info(result);
 
-            //异步
+            //锟届步
             AsynFuture.create(f).addListener(new FutureListener<String>() {
                 @Override
                 public void onSuccess(String s) {
