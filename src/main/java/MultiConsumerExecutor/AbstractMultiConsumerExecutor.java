@@ -12,10 +12,16 @@ public abstract class AbstractMultiConsumerExecutor {
 
     protected BlockingQueue messageQueue;
 
-    protected ArrayList<BlockingQueue> subQueues;
+    protected ArrayList<ConsumerExecutor> subQueues;
 
     protected Integer SUB_QUEUE_COUNT;
 
     public abstract Future executor(Runnable message);
+
+    public abstract void registerConsumer();
+
+    public abstract void registerConsumer(ConsumerExecutor subExecutor);
+
+    public abstract void unstallConsumer(int index);
 
 }

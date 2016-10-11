@@ -13,18 +13,28 @@ public class MultiConsumerExecutor extends AbstractMultiConsumerExecutor{
 
     public MultiConsumerExecutor() {
         messageQueue = new LinkedBlockingQueue();
+        // 初始化子执行器
         initSubQueue(5);
+        // 开启分发线程
+        dispatch();
     }
 
     public MultiConsumerExecutor(Integer queueSize, Integer subQueuesSize) {
         messageQueue = new ArrayBlockingQueue(queueSize);
+        // 初始化子执行器, 可以设置自执行器数量
         initSubQueue(subQueuesSize);
+        // 开启分发线程
+        dispatch();
     }
 
     public void initSubQueue(int cnt) {
         for (int i = 0; i < cnt; i++) {
-            subQueues.add(new LinkedBlockingQueue());
+            registerConsumer();
         }
+    }
+
+    public void dispatch() {
+        new Thread(DispatchConsumerTask.create(this), "multi-consumer-dispatch-thread").start();
     }
 
     @Override
@@ -35,6 +45,24 @@ public class MultiConsumerExecutor extends AbstractMultiConsumerExecutor{
             Thread.currentThread().interrupt();
         }
         return null;
+    }
+
+    @Override
+    public void registerConsumer() {
+        ConsumerExecutor subExecutor = new ConsumerExecutor();
+        subExecutor.parentExecutor = this;
+        subQueues.add(subExecutor);
+    }
+
+    @Override
+    public void registerConsumer(ConsumerExecutor subExecutor) {
+        subExecutor.parentExecutor = this;
+        subQueues.add(subExecutor);
+    }
+
+    @Override
+    public void unstallConsumer(int index) {
+        subQueues.remove(index);
     }
 
 }

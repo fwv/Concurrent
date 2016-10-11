@@ -3,7 +3,7 @@ package MultiConsumerExecutor;
 /**
  * @Author fengwei
  * Created on 2016/10/11/0011.
- * 消息分发线程，负责将主队列中消息分发到子队列中
+ * 消息分发任务，负责将主队列中消息分发到子队列中
  */
 public class DispatchConsumerTask implements Runnable{
 
@@ -14,6 +14,8 @@ public class DispatchConsumerTask implements Runnable{
         task.executor = executor;
         return task;
     }
+
+    private DispatchConsumerTask(){}
 
     @Override
     public void run() {
@@ -29,7 +31,7 @@ public class DispatchConsumerTask implements Runnable{
                 int index = (int) (System.nanoTime() % executor.subQueues.size());
                 try {
                     // 目前使用简单哈希，日后或选择一致性hash
-                    executor.subQueues.get(index).put(message);
+                    executor.subQueues.get(index).queue.put(message);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
