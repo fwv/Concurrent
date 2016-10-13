@@ -1,6 +1,5 @@
 package MultiConsumerExecutor;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 /**
