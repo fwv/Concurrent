@@ -1,14 +1,11 @@
 package Future.DeadLockCheckFuture;
 
-import java.util.concurrent.Executor;
 
 /**
  * @Author fengwei
  * Created on 2016/11/8/0008.
  */
 public interface Future {
-
-    Executor executor = null;
 
     boolean isDone();
 
@@ -18,10 +15,10 @@ public interface Future {
 
     void addListener(FutureListener listener);
 
-    void await() throws InterruptedException;
+    Future await() throws InterruptedException;
 
-    void awaitUninterruptly();
+    Future awaitUninterruptly();
 
-    void notifyListener();
+    Future notifyListener();
 
 }
