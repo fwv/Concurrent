@@ -1,5 +1,7 @@
 package Future.DeadLockCheckFuture;
 
+import tools.LogUtils;
+
 import java.util.concurrent.Executor;
 
 /**
@@ -19,6 +21,7 @@ public final class DeadLockProofWorker {
         }
         executor.execute(()->{
             PROOF.set(executor);
+            //LogUtils.log.info("ThreadLocal regist : " + Thread.currentThread().getName());
             try {
                 runnable.run();
             } finally {

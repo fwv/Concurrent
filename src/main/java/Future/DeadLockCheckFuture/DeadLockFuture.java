@@ -46,6 +46,7 @@ public class DeadLockFuture implements Future{
 
     @Override
     public boolean setSuccess() {
+        notifyListener();
         synchronized (this) {
            if (isDone() || isSucess()) {
                return false;
@@ -53,7 +54,6 @@ public class DeadLockFuture implements Future{
             done = true;
             sucess = true;
         }
-        notifyListener();
         return true;
     }
 
@@ -72,7 +72,7 @@ public class DeadLockFuture implements Future{
             if (isDone()) {
                 notifyNow = true;
             }
-            if (null == listener) {
+            if (null == this.listener) {
                 this.listener = listener;
             }
         }
@@ -117,15 +117,18 @@ public class DeadLockFuture implements Future{
     public Future notifyListener() {
         try {
             listener.operationComplete(this);
+            //this.notifyAll();
+            this.notify();
         } catch (Exception e) {
             LogUtils.log.warn("A Exception was thrown by "+
-            FutureListener.class.getSimpleName()+"."+e.toString());
+            FutureListener.class.getSimpleName()+"."+e.toString(), e);
+            e.printStackTrace();
         }
         return null;
     }
 
     private void checkDeadLock() {
-        if (!enableDeadLockCheck && DeadLockProofWorker.PROOF.get() != null) {
+        if (enableDeadLockCheck && DeadLockProofWorker.PROOF.get() != null) {
             throw new IllegalStateException("Dead lock has happened, maybe it was caused by using DeadLockFuture#await() during" +
                     " FutureListener#operationComplete()");
         }
