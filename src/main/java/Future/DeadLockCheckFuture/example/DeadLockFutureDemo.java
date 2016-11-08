@@ -49,7 +49,7 @@ public class DeadLockFutureDemo {
             @Override
             public void operationComplete(Future future) throws Exception {
                 //LogUtils.log.info("oparation complete : " + Thread.currentThread().getName());
-                //future.await();
+                future.await();
                 LogUtils.log.info("oparation complete! ");
             }
 

@@ -117,12 +117,12 @@ public class DeadLockFuture implements Future{
     public Future notifyListener() {
         try {
             listener.operationComplete(this);
-            //this.notifyAll();
-            this.notify();
+            synchronized (this) {
+                this.notifyAll();
+            }
         } catch (Exception e) {
             LogUtils.log.warn("A Exception was thrown by "+
-            FutureListener.class.getSimpleName()+"."+e.toString(), e);
-            e.printStackTrace();
+            FutureListener.class.getSimpleName()+"."+e.toString());
         }
         return null;
     }
