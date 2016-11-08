@@ -11,6 +11,8 @@ public interface Future {
 
     boolean isSucess();
 
+    boolean setSuccess();
+
     Throwable getException();
 
     void addListener(FutureListener listener);

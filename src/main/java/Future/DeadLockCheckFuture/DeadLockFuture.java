@@ -1,5 +1,6 @@
 package Future.DeadLockCheckFuture;
 
+import tools.LogUtils;
 import tools.NamedThreadFactory;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -44,13 +45,41 @@ public class DeadLockFuture implements Future{
     }
 
     @Override
+    public boolean setSuccess() {
+        synchronized (this) {
+           if (isDone() || isSucess()) {
+               return false;
+           }
+            done = true;
+            sucess = true;
+        }
+        notifyListener();
+        return true;
+    }
+
+    @Override
     public Throwable getException() {
         return null == cause ? null : cause;
     }
 
     @Override
     public void addListener(FutureListener listener) {
-        
+        if (null == listener) {
+            throw new NullPointerException("listener");
+        }
+        boolean notifyNow = false;
+        synchronized (this) {
+            if (isDone()) {
+                notifyNow = true;
+            }
+            if (null == listener) {
+                this.listener = listener;
+            }
+        }
+
+        if (notifyNow) {
+            notifyListener();
+        }
     }
 
     @Override
@@ -61,6 +90,7 @@ public class DeadLockFuture implements Future{
         }
 
         synchronized (this) {
+            checkDeadLock();
             while(!isDone()) {
                 this.wait();
             }
@@ -70,6 +100,7 @@ public class DeadLockFuture implements Future{
 
     @Override
     public Future awaitUninterruptly() {
+        checkDeadLock();
         synchronized (this) {
             while(!isDone()) {
                 try {
@@ -84,16 +115,24 @@ public class DeadLockFuture implements Future{
 
     @Override
     public Future notifyListener() {
-
+        try {
+            listener.operationComplete(this);
+        } catch (Exception e) {
+            LogUtils.log.warn("A Exception was thrown by "+
+            FutureListener.class.getSimpleName()+"."+e.toString());
+        }
         return null;
     }
 
     private void checkDeadLock() {
-
+        if (!enableDeadLockCheck && DeadLockProofWorker.PROOF.get() != null) {
+            throw new IllegalStateException("Dead lock has happened, maybe it was caused by using DeadLockFuture#await() during" +
+                    " FutureListener#operationComplete()");
+        }
     }
 
     public void executor(Runnable task) {
-        DeadLockProofWorker.start(this.executor, task);
+        DeadLockProofWorker.start(this.executor, task, this);
     }
 
 }

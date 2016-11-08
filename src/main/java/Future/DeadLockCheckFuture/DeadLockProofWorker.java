@@ -10,7 +10,7 @@ public final class DeadLockProofWorker {
 
     public static final ThreadLocal<Executor> PROOF = new ThreadLocal<Executor>();
 
-    public static void start(Executor executor, Runnable runnable) {
+    public static void start(Executor executor, Runnable runnable, Future future) {
         if (executor == null) {
             throw new NullPointerException("Executor is null");
         }
@@ -22,6 +22,7 @@ public final class DeadLockProofWorker {
             try {
                 runnable.run();
             } finally {
+                future.setSuccess();
                 PROOF.remove();
             }
         });
